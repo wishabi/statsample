@@ -1,11 +1,10 @@
 #!/usr/bin/env ruby1.9
-require 'reportbuilder'
 refs=[]
 Dir.glob "**/*.rb" do |f|
   next if f=~/pkg/
 	reference=false
 	File.open(f).each_line 	do |l|
-		
+
 		if l=~/== Reference/
 		    reference=true
 		elsif reference
@@ -15,7 +14,7 @@ Dir.glob "**/*.rb" do |f|
 				reference=false
 			end
 	        end
-	    
+
 	end
 end
 

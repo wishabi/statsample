@@ -1,4 +1,4 @@
-# = statsample.rb - 
+# = statsample.rb -
 # Statsample - Statistic package for Ruby
 # Copyright (C) 2008-2009  Claudio Bustos
 #
@@ -23,7 +23,6 @@ require 'matrix'
 require 'extendmatrix'
 require 'distribution'
 require 'dirty-memoize'
-require 'reportbuilder'
 
 
 
@@ -45,7 +44,7 @@ class Module
   def include_aliasing(m, suffix="ruby")
     m.instance_methods.each do |f|
       if instance_methods.include? f
-        alias_method("#{f}_#{suffix}",f) 
+        alias_method("#{f}_#{suffix}",f)
         remove_method f
       end
     end
@@ -80,7 +79,7 @@ class Array
   end
 end
 
-def create_test(*args,&proc) 
+def create_test(*args,&proc)
   description=args.shift
   fields=args
   [description, fields, Proc.new]
@@ -93,10 +92,10 @@ rescue LoadError
   def bindtextdomain(d) #:nodoc:
   d
   end
-  
+
   # Bored module
   module GetText  #:nodoc:
-    def _(t)  
+    def _(t)
         t
     end
   end
@@ -107,21 +106,21 @@ end
 # * Module Statsample::Bivariate provides covariance and pearson, spearman, point biserial, tau a, tau b, gamma, tetrachoric (see Bivariate::Tetrachoric) and polychoric (see Bivariate::Polychoric) correlations. Include methods to create correlation and covariance matrices
 # * Multiple types of regression on Statsample::Regression
 # * Factorial Analysis algorithms on Statsample::Factor module.
-# * Dominance Analysis. Based on Budescu and Azen papers.link[http://psycnet.apa.org/journals/met/8/2/129/]. 
+# * Dominance Analysis. Based on Budescu and Azen papers.link[http://psycnet.apa.org/journals/met/8/2/129/].
 # * Module Statsample::Codification, to help to codify open questions
 # * Converters to import and export data from databases, csv and excel files.
 # * Module Statsample::Crosstab provides function to create crosstab for categorical data
 # * Reliability analysis provides functions to analyze scales.
 # * Module Statsample::SRS (Simple Random Sampling) provides a lot of functions to estimate standard error for several type of samples
-# * Interfaces to gdchart, gnuplot and SVG::Graph 
+# * Interfaces to gdchart, gnuplot and SVG::Graph
 #
 module Statsample
-  
+
   def self.create_has_library(library)
     define_singleton_method("has_#{library}?") do
       cv="@@#{library}"
       if !class_variable_defined? cv
-        begin 
+        begin
           require library.to_s
           class_variable_set(cv,true)
         rescue LoadError
@@ -131,9 +130,9 @@ module Statsample
       class_variable_get(cv)
     end
   end
-  
+
   create_has_library :gsl
-  
+
   VERSION = '1.2.0'
   SPLIT_TOKEN = ","
   autoload(:Analysis, 'statsample/analysis')
@@ -156,14 +155,14 @@ module Statsample
   autoload(:Multivariate, 'statsample/multivariate')
   autoload(:Multiset, 'statsample/multiset')
   autoload(:StratifiedSample, 'statsample/multiset')
-  autoload(:MLE, 'statsample/mle')    
+  autoload(:MLE, 'statsample/mle')
   autoload(:Regression, 'statsample/regression')
   autoload(:Test, 'statsample/test')
   autoload(:Factor, 'statsample/factor')
   autoload(:Graph, 'statsample/graph')
   autoload(:TimeSeries, 'statsample/timeseries')
-  
-  
+
+
   class << self
     # Load a object saved on a file.
     def load(filename)
@@ -175,9 +174,9 @@ module Statsample
         false
       end
     end
-    
-    
-    
+
+
+
     # Create a matrix using vectors as columns.
     # Use:
     #
@@ -195,13 +194,13 @@ module Statsample
     end
     # Returns a duplicate of the input vectors, without missing data
     # for any of the vectors.
-    # 
+    #
     #  a=[1,2,3,6,7,nil,3,5].to_scale
     #  b=[nil,nil,5,6,4,5,10,2].to_scale
     #  c=[2,4,6,7,4,5,6,7].to_scale
     #  a2,b2,c2=Statsample.only_valid(a,b,c)
-    #  => [#<Statsample::Scale:0xb748c8c8 @data=[3, 6, 7, 3, 5]>, 
-    #        #<Statsample::Scale:0xb748c814 @data=[5, 6, 4, 10, 2]>, 
+    #  => [#<Statsample::Scale:0xb748c8c8 @data=[3, 6, 7, 3, 5]>,
+    #        #<Statsample::Scale:0xb748c814 @data=[5, 6, 4, 10, 2]>,
     #        #<Statsample::Scale:0xb748c760 @data=[6, 7, 4, 6, 7]>]
     #
     def only_valid(*vs)
@@ -210,8 +209,8 @@ module Statsample
       ds=Statsample::Dataset.new(h).dup_only_valid
       ds.vectors.values
     end
-    
-    # Cheap version of #only_valid. 
+
+    # Cheap version of #only_valid.
     # If any vectors have missing_values, return only valid.
     # If not, return the vectors itself
     def only_valid_clone(*vs)
@@ -221,11 +220,11 @@ module Statsample
         vs
       end
     end
-  end  
-  
-  
-  
-  
+  end
+
+
+
+
   module Util
     # Reference: http://www.itl.nist.gov/div898/handbook/eda/section3/normprpl.htm
     def normal_order_statistic_medians(i,n)
@@ -238,31 +237,31 @@ module Statsample
       end
       u
     end
-    
+
     def self.nice(s,e) # :nodoc:
       reverse = e<s
       min = reverse ? e : s
       max = reverse ? s : e
       span=max-min
       return [s, e] if (!span or (span.respond_to? :infinite? and span.infinite?))
-      
-      step=10**((Math::log(span).quo(Math::log(10))).round - 1).to_f  
+
+      step=10**((Math::log(span).quo(Math::log(10))).round - 1).to_f
       out=[(min.quo(step)).floor * step, (max.quo(step)).ceil * step]
       out.reverse! if reverse
       out
     end
-    
-    
+
+
   end
-  
-  
-  
+
+
+
   module Writable
     def save(filename)
       fp=File.open(filename,"w")
       Marshal.dump(self,fp)
       fp.close
-    end        
+    end
   end
   # Provides method summary to generate summaries and include GetText
   module Summarizable
@@ -279,7 +278,7 @@ end
 
 
 #--
-begin 
+begin
   require 'statsamplert'
 rescue LoadError
   module Statsample
